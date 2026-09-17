@@ -6,16 +6,16 @@
 - [x] Implement a Python reference model for arithmetic instructions
 - [x] Add a smoke test and instruction encoder
 - [x] Implement the RTL ALU
-- [ ] Add immediate arithmetic and control-flow instructions to the emulator (guided-build scaffold and contracts added)
-- [ ] Choose data-memory addressing/error semantics, then add `LD`/`ST` to the emulator
-- [ ] Write a short assembly demo and trace output
+- [x] Add immediate arithmetic and control-flow instructions to the emulator (guided-build scaffold and contracts added)
+- [x] Choose data-memory addressing/error semantics, then add `LD`/`ST` to the emulator
+- [x] Write a short assembly demo and trace output
 
 ## Milestone 1: single-cycle CPU
 
-- Build instruction decoder, register file, PC logic, and data-memory interface
-- Connect the ALU and define flag writeback behavior
-- Create SystemVerilog testbenches and compare RTL state against the emulator
-- Run a small arithmetic and branch program end to end
+- [ ] Build instruction decoder, register file, PC logic, and data-memory interface
+- [ ] Connect the ALU and define flag writeback behavior
+- [ ] Create SystemVerilog testbenches and compare RTL state against the emulator
+- [ ] Run a small arithmetic and branch program end to end
 
 ## Milestone 2: FPGA bring-up
 
