@@ -4,7 +4,7 @@ An educational 16-bit RISC-style CPU designed in SystemVerilog, supported by a s
 
 ## Current status
 
-**Milestone 0 — architecture and emulator foundation.** The initial ISA, instruction encoder, ALU model, and executable smoke test are in place. RTL currently contains the combinational ALU that will become part of the datapath.
+**Milestone 0 — architecture and emulator foundation.** The initial ISA, register-ALU emulator, and executable smoke test are in place. The next guided-build tasks are immediate arithmetic and control flow; their executable behavioral contracts live in [the Milestone 0 workbook](docs/milestone-0-workbook.md). RTL currently contains the combinational ALU that will become part of the datapath.
 
 ## Architecture at a glance
 
@@ -33,6 +33,21 @@ python3 tests/test_emulator.py
 ```
 
 No third-party Python packages are required.
+
+For the next guided-build tasks, run:
+
+```sh
+python3 tests/test_emulator_extended.py
+```
+
+That contract test is expected to fail until you implement each associated
+task in order; see [the workbook](docs/milestone-0-workbook.md).
+
+The data-memory exercise has its own contract test:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 tests/test_memory_access.py
+```
 
 ## Roadmap
 

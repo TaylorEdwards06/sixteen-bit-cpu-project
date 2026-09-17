@@ -62,6 +62,13 @@ Reserved opcodes deliberately trap as illegal instructions in a later milestone.
 
 ## Memory map (planned)
 
+Data memory uses byte addresses. `LD` and `ST` transfer one 16-bit word and
+their effective addresses must be even-aligned. Loads and stores leave all
+condition flags unchanged. In the reference emulator, an unaligned or
+unmapped access raises `ValueError`; this will become an architectural fault
+mechanism in a later exception milestone. The initial RAM region is
+`0x0000–0x7FFF`, and unwritten valid RAM words read as zero.
+
 | Address | Device |
 |---:|---|
 | `0x0000–0x7FFF` | Program/data RAM |
@@ -72,5 +79,4 @@ Reserved opcodes deliberately trap as illegal instructions in a later milestone.
 ## Open decisions
 
 - Exact reset-vector address and RAM/ROM split
-- Byte accesses versus word-only data memory
 - Interrupt vector layout and return-from-interrupt encoding

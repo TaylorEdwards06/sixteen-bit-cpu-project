@@ -6,7 +6,8 @@
 - [x] Implement a Python reference model for arithmetic instructions
 - [x] Add a smoke test and instruction encoder
 - [x] Implement the RTL ALU
-- [ ] Add every instruction to the emulator
+- [ ] Add immediate arithmetic and control-flow instructions to the emulator (guided-build scaffold and contracts added)
+- [ ] Choose data-memory addressing/error semantics, then add `LD`/`ST` to the emulator
 - [ ] Write a short assembly demo and trace output
 
 ## Milestone 1: single-cycle CPU
