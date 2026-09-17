@@ -26,13 +26,13 @@ module register_file (
     end
 
     always_comb begin
-        if (read_addr_a == 3d'0) begin
+        if (read_addr_a == 3'd0) begin
             read_data_a = 16'h0000;
         end else begin
             read_data_a = regs[read_addr_a];
         end
 
-        if (read_addr_b == 3d'0) begin
+        if (read_addr_b == 3'd0) begin
             read_data_b = 16'h0000;
         end else begin
             read_data_b = regs[read_addr_b];
