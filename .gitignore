@@ -4,3 +4,4 @@ __pycache__/
 *.fst
 build/
 sim_build/
+docs/private
