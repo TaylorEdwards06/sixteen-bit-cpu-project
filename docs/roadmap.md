@@ -12,7 +12,9 @@
 
 ## Milestone 1: single-cycle CPU
 
-- [ ] Build instruction decoder, register file, PC logic, and data-memory interface
+- [x] Build and verify the register file
+- [x] Build the instruction decoder and immediate sign extension
+- [ ] Build PC logic and the data-memory interface
 - [ ] Connect the ALU and define flag writeback behavior
 - [ ] Create SystemVerilog testbenches and compare RTL state against the emulator
 - [ ] Run a small arithmetic and branch program end to end

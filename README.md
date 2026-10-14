@@ -4,7 +4,10 @@ An educational 16-bit RISC-style CPU designed in SystemVerilog, supported by a s
 
 ## Current status
 
-**Milestone 0 — architecture and emulator foundation.** The initial ISA, register-ALU emulator, and executable smoke test are in place. The next guided-build tasks are immediate arithmetic and control flow; their executable behavioral contracts live in [the Milestone 0 workbook](docs/milestone-0-workbook.md). RTL currently contains the combinational ALU that will become part of the datapath.
+**Milestone 1 — single-cycle CPU.** The ISA and Python reference emulator are
+complete. RTL includes the combinational ALU and a verified 8 × 16-bit
+register file. The current guided-build task is the instruction decoder and
+immediate sign extension.
 
 ## Architecture at a glance
 
