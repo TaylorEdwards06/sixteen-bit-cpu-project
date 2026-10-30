@@ -14,7 +14,7 @@
 
 - [x] Build and verify the register file
 - [x] Build the instruction decoder and immediate sign extension
-- [ ] Build PC logic and the data-memory interface
+- [ ] Build PC logic and the data-memory interface (PC implemented; interface in progress)
 - [ ] Connect the ALU and define flag writeback behavior
 - [ ] Create SystemVerilog testbenches and compare RTL state against the emulator
 - [ ] Run a small arithmetic and branch program end to end

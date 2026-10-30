@@ -6,8 +6,9 @@ An educational 16-bit RISC-style CPU designed in SystemVerilog, supported by a s
 
 **Milestone 1 — single-cycle CPU.** The ISA and Python reference emulator are
 complete. RTL includes the combinational ALU and a verified 8 × 16-bit
-register file. The current guided-build task is the instruction decoder and
-immediate sign extension.
+register file. The instruction decoder and immediate sign extension are also
+complete, and the byte-addressed program counter is implemented. The current
+guided-build task is the data-memory interface.
 
 ## Architecture at a glance
 
@@ -50,6 +51,23 @@ The data-memory exercise has its own contract test:
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 python3 tests/test_memory_access.py
+```
+
+The current RTL exercise uses `rtl/program_counter.sv` and
+`tests/tb_program_counter.sv`. With ModelSim or Questa, run:
+
+```sh
+vlib work
+vlog -sv rtl/program_counter.sv tests/tb_program_counter.sv
+vsim -c tb_program_counter -do "run -all; quit -f"
+```
+
+The data-memory-interface exercise uses `rtl/data_memory_interface.sv` and
+`tests/tb_data_memory_interface.sv`:
+
+```sh
+vlog -sv rtl/data_memory_interface.sv tests/tb_data_memory_interface.sv
+vsim -c tb_data_memory_interface -do "run -all; quit -f"
 ```
 
 ## Roadmap
