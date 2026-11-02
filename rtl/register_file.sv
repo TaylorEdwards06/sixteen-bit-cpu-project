@@ -17,10 +17,10 @@ module register_file (
     always_ff @(posedge clk) begin
         if (reset) begin
             for (int i = 0; i < 8; i++) begin 
-                regs[i] <= 16'h0000; // 16-bits hex value of 0000
+                regs[i] <= 16'h0000;
             end
             // if write high and not writing to 0 then allow write
-        end else if (write_enable && write_addr != 3'd0) begin // 3-bits decimal value of 0
+        end else if (write_enable && write_addr != 3'd0) begin 
             regs[write_addr] <= write_data;
         end
     end
