@@ -8,8 +8,9 @@ An educational 16-bit RISC-style CPU designed in SystemVerilog, supported by a s
 complete. RTL includes the combinational ALU and a verified 8 × 16-bit
 register file. The instruction decoder and immediate sign extension are also
 complete, along with the byte-addressed program counter and data-memory
-interface. The architectural flag register is implemented, and the current
-guided-build task is integrating it with the ALU as an execution unit.
+interface. The architectural flag register and execution unit are implemented.
+The current guided-build task is the first CPU-core integration slice:
+connecting instruction decode to sequential and unconditional-jump PC control.
 
 ## Architecture at a glance
 
@@ -86,6 +87,65 @@ The execution-unit integration exercise uses `rtl/execution_unit.sv` and
 vlog -sv rtl/alu.sv rtl/flag_register.sv rtl/execution_unit.sv \
   tests/tb_execution_unit.sv
 vsim -c tb_execution_unit -do "run -all; quit -f"
+```
+
+The first CPU-core control integration exercise uses `rtl/cpu_core.sv` and
+`tests/tb_cpu_core_control.sv`:
+
+```sh
+vlog -sv rtl/instruction_decoder.sv rtl/program_counter.sv \
+  rtl/cpu_core.sv tests/tb_cpu_core_control.sv
+vsim -c tb_cpu_core_control -do "run -all; quit -f"
+```
+
+The arithmetic datapath integration exercise adds the register file and
+execution unit:
+
+```sh
+vlog -sv rtl/alu.sv rtl/flag_register.sv rtl/execution_unit.sv \
+  rtl/register_file.sv rtl/instruction_decoder.sv rtl/program_counter.sv \
+  rtl/cpu_core.sv tests/tb_cpu_core_arithmetic.sv
+vsim -c tb_cpu_core_arithmetic -do "run -all; quit -f"
+```
+
+The conditional-branch integration exercise connects `BEQ` to the stored zero
+flag:
+
+```sh
+vlog -sv rtl/alu.sv rtl/flag_register.sv rtl/execution_unit.sv \
+  rtl/register_file.sv rtl/instruction_decoder.sv rtl/program_counter.sv \
+  rtl/cpu_core.sv tests/tb_cpu_core_branch.sv
+vsim -c tb_cpu_core_branch -do "run -all; quit -f"
+```
+
+The load/store integration exercise connects the data-memory interface and
+load writeback path:
+
+```sh
+vlog -sv rtl/alu.sv rtl/flag_register.sv rtl/execution_unit.sv \
+  rtl/register_file.sv rtl/instruction_decoder.sv rtl/program_counter.sv \
+  rtl/data_memory_interface.sv rtl/cpu_core.sv tests/tb_cpu_core_memory.sv
+vsim -c tb_cpu_core_memory -do "run -all; quit -f"
+```
+
+The HALT integration exercise stores halted state and suppresses subsequent
+architectural side effects:
+
+```sh
+vlog -sv rtl/alu.sv rtl/flag_register.sv rtl/execution_unit.sv \
+  rtl/register_file.sv rtl/instruction_decoder.sv rtl/program_counter.sv \
+  rtl/data_memory_interface.sv rtl/cpu_core.sv tests/tb_cpu_core_halt.sv
+vsim -c tb_cpu_core_halt -do "run -all; quit -f"
+```
+
+The end-to-end program exercise adds testbench instruction ROM and data RAM
+models around the complete core:
+
+```sh
+vlog -sv rtl/alu.sv rtl/flag_register.sv rtl/execution_unit.sv \
+  rtl/register_file.sv rtl/instruction_decoder.sv rtl/program_counter.sv \
+  rtl/data_memory_interface.sv rtl/cpu_core.sv tests/tb_cpu_core_program.sv
+vsim -c tb_cpu_core_program -do "run -all; quit -f"
 ```
 
 ## Roadmap
