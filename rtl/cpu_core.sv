@@ -86,7 +86,7 @@ module cpu_core (
             take_branch = 1'b0;
         end
 
-        // determine which address to write back to reg file
+        // determine which value is written back to reg file
         if (memory_read) begin
             writeback_register = memory_load_return;
         end else begin

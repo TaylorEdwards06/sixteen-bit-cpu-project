@@ -16,16 +16,19 @@
 - [x] Build the instruction decoder and immediate sign extension
 - [x] Build PC logic and the data-memory interface
 - [x] Connect the ALU and define flag writeback behavior
-- [ ] Integrate the single-cycle CPU core (end-to-end program test in progress)
-- [ ] Create SystemVerilog testbenches and compare RTL state against the emulator
-- [ ] Run a small arithmetic and branch program end to end
+- [x] Integrate the single-cycle CPU core
+- [x] Create SystemVerilog testbenches and compare RTL state against the emulator
+- [x] Run a small arithmetic and branch program end to end
 
 ## Milestone 2: FPGA bring-up
 
-- Select a development board and record its toolchain/version
-- Add on-chip ROM/RAM and a clock/reset wrapper
-- Add memory-mapped LEDs and UART transmit
-- Demonstrate a serial "hello" and register/ALU program
+Current next step: select the FPGA board and toolchain, then record the board's
+FPGA part number, clock source, and available LED/UART pins.
+
+- [ ] Select a development board and record its toolchain/version
+- [ ] Add on-chip ROM/RAM and a clock/reset wrapper
+- [ ] Add memory-mapped LEDs and UART transmit
+- [ ] Demonstrate a serial "hello" and register/ALU program
 
 ## Milestone 3: system features
 

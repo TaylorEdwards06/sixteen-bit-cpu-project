@@ -1,164 +1,131 @@
 # Sixteen-bit CPU Project
 
-An educational 16-bit RISC-style CPU designed in SystemVerilog, supported by a small Python reference emulator. The project is built in public: each milestone produces a working, testable system.
+An educational 16-bit RISC-style CPU implemented in SystemVerilog, with a
+Python reference emulator and focused RTL testbenches. The project explores
+instruction-set design, datapath and control integration, memory interfaces,
+and hardware verification.
 
 ## Current status
 
-**Milestone 1 — single-cycle CPU.** The ISA and Python reference emulator are
-complete. RTL includes the combinational ALU and a verified 8 × 16-bit
-register file. The instruction decoder and immediate sign extension are also
-complete, along with the byte-addressed program counter and data-memory
-interface. The architectural flag register and execution unit are implemented.
-The current guided-build task is the first CPU-core integration slice:
-connecting instruction decode to sequential and unconditional-jump PC control.
+**Milestone 1 — single-cycle CPU: complete.**
 
-## Architecture at a glance
+The repository contains a working single-cycle CPU core that executes
+arithmetic, logical, memory, branch, jump, and halt instructions. The complete
+core has been exercised with an end-to-end program using testbench instruction
+ROM and data RAM models.
+
+That program:
+
+- Loops through `3 + 2 + 1` to produce `6`
+- Stores the result in data memory
+- Loads it into another register
+- Verifies it with subtraction and a conditional branch
+- Skips an instruction and halts at the expected address
+
+The Python reference model reaches the same final state: PC `0x0018`, memory
+word `0x0000` equal to `0x0006`, `r3` equal to `0x0006`, and `r5` unchanged.
+
+## Architecture
 
 - 16-bit data and address width
-- 8 general-purpose registers (`r0`–`r7`); `r0` is hard-wired to zero
+- Eight 16-bit registers (`r0`–`r7`)
+- `r0` hard-wired to zero
 - Fixed-width 16-bit instructions
-- Condition flags: zero (`Z`), negative (`N`), carry (`C`), overflow (`V`)
-- Separate program and data memory interfaces planned
-- Memory-mapped peripherals planned: UART, LEDs, timer, interrupts
+- Byte-addressed program counter; each instruction occupies two bytes
+- Signed immediate and PC-relative branch offsets
+- Condition flags: zero (`Z`), negative (`N`), carry (`C`), and overflow (`V`)
+- Separate instruction and data-memory interfaces
+- Aligned 16-bit loads and stores at even byte addresses
+- Stored HALT state that freezes architectural updates until reset
 
-The ISA is intentionally compact, so the control path is understandable and easy to verify. See [the ISA specification](docs/isa.md).
+The current instruction set includes:
+
+- `NOP`
+- `ADD`, `SUB`, `AND`, `OR`, and `XOR`
+- `ADDI`
+- `LD` and `ST`
+- `BEQ` and `JMP`
+- `HALT`
+
+See [the ISA specification](docs/isa.md) for instruction formats, opcodes, and
+memory semantics.
+
+## RTL organization
+
+The single-cycle core in `rtl/cpu_core.sv` integrates:
+
+- `instruction_decoder.sv` — instruction fields and control signals
+- `program_counter.sv` — sequential and PC-relative control flow
+- `register_file.sv` — two read ports, one write port, and hard-wired `r0`
+- `alu.sv` — arithmetic, logical operations, and combinational flags
+- `flag_register.sv` — architectural condition-flag storage
+- `execution_unit.sv` — operand selection, ALU, and stored flags
+- `data_memory_interface.sv` — aligned load/store boundary and access faults
+
+The core uses combinational instruction and data reads with clocked PC,
+register, flag, memory-write, and HALT state.
 
 ## Repository layout
 
-```
-docs/       ISA decisions, roadmap, and future diagrams
-emulator/   Reference model and instruction encoder
+```text
+docs/       ISA specification and development roadmap
+emulator/   Python reference CPU and instruction encoders
 rtl/        Synthesizable SystemVerilog modules
-tests/      Executable checks for the reference model and RTL
+tests/      Python contracts and SystemVerilog testbenches
 ```
 
-## Run the current smoke test
+## Verification
 
-```sh
-python3 tests/test_emulator.py
-```
+### Python reference model
 
 No third-party Python packages are required.
 
-For the next guided-build tasks, run:
-
 ```sh
-python3 tests/test_emulator_extended.py
-```
-
-That contract test is expected to fail until you implement each associated
-task in order; see [the workbook](docs/milestone-0-workbook.md).
-
-The data-memory exercise has its own contract test:
-
-```sh
+PYTHONDONTWRITEBYTECODE=1 python3 tests/test_emulator.py
+PYTHONDONTWRITEBYTECODE=1 python3 tests/test_emulator_extended.py
 PYTHONDONTWRITEBYTECODE=1 python3 tests/test_memory_access.py
 ```
 
-The current RTL exercise uses `rtl/program_counter.sv` and
-`tests/tb_program_counter.sv`. With ModelSim or Questa, run:
+These tests cover arithmetic, immediate operations, flags, control flow,
+loads, stores, alignment, and invalid memory accesses.
+
+### SystemVerilog RTL
+
+The RTL testbenches target ModelSim or Questa. With `vlib`, `vlog`, and `vsim`
+on `PATH`, run the complete regression with one command:
 
 ```sh
-vlib work
-vlog -sv rtl/program_counter.sv tests/tb_program_counter.sv
-vsim -c tb_program_counter -do "run -all; quit -f"
+./tests/run_all_rtl_tests.sh
 ```
 
-The data-memory-interface exercise uses `rtl/data_memory_interface.sv` and
-`tests/tb_data_memory_interface.sv`:
+The script creates the ModelSim work library when needed, compiles the complete
+design and test suite, stops on the first failure, and returns a nonzero exit
+status when compilation or simulation fails.
 
-```sh
-vlog -sv rtl/data_memory_interface.sv tests/tb_data_memory_interface.sv
-vsim -c tb_data_memory_interface -do "run -all; quit -f"
-```
-
-The flag-register exercise uses `rtl/flag_register.sv` and
-`tests/tb_flag_register.sv`:
-
-```sh
-vlog -sv rtl/flag_register.sv tests/tb_flag_register.sv
-vsim -c tb_flag_register -do "run -all; quit -f"
-```
-
-The execution-unit integration exercise uses `rtl/execution_unit.sv` and
-`tests/tb_execution_unit.sv`:
-
-```sh
-vlog -sv rtl/alu.sv rtl/flag_register.sv rtl/execution_unit.sv \
-  tests/tb_execution_unit.sv
-vsim -c tb_execution_unit -do "run -all; quit -f"
-```
-
-The first CPU-core control integration exercise uses `rtl/cpu_core.sv` and
-`tests/tb_cpu_core_control.sv`:
-
-```sh
-vlog -sv rtl/instruction_decoder.sv rtl/program_counter.sv \
-  rtl/cpu_core.sv tests/tb_cpu_core_control.sv
-vsim -c tb_cpu_core_control -do "run -all; quit -f"
-```
-
-The arithmetic datapath integration exercise adds the register file and
-execution unit:
-
-```sh
-vlog -sv rtl/alu.sv rtl/flag_register.sv rtl/execution_unit.sv \
-  rtl/register_file.sv rtl/instruction_decoder.sv rtl/program_counter.sv \
-  rtl/cpu_core.sv tests/tb_cpu_core_arithmetic.sv
-vsim -c tb_cpu_core_arithmetic -do "run -all; quit -f"
-```
-
-The conditional-branch integration exercise connects `BEQ` to the stored zero
-flag:
-
-```sh
-vlog -sv rtl/alu.sv rtl/flag_register.sv rtl/execution_unit.sv \
-  rtl/register_file.sv rtl/instruction_decoder.sv rtl/program_counter.sv \
-  rtl/cpu_core.sv tests/tb_cpu_core_branch.sv
-vsim -c tb_cpu_core_branch -do "run -all; quit -f"
-```
-
-The load/store integration exercise connects the data-memory interface and
-load writeback path:
-
-```sh
-vlog -sv rtl/alu.sv rtl/flag_register.sv rtl/execution_unit.sv \
-  rtl/register_file.sv rtl/instruction_decoder.sv rtl/program_counter.sv \
-  rtl/data_memory_interface.sv rtl/cpu_core.sv tests/tb_cpu_core_memory.sv
-vsim -c tb_cpu_core_memory -do "run -all; quit -f"
-```
-
-The HALT integration exercise stores halted state and suppresses subsequent
-architectural side effects:
-
-```sh
-vlog -sv rtl/alu.sv rtl/flag_register.sv rtl/execution_unit.sv \
-  rtl/register_file.sv rtl/instruction_decoder.sv rtl/program_counter.sv \
-  rtl/data_memory_interface.sv rtl/cpu_core.sv tests/tb_cpu_core_halt.sv
-vsim -c tb_cpu_core_halt -do "run -all; quit -f"
-```
-
-The end-to-end program exercise adds testbench instruction ROM and data RAM
-models around the complete core:
-
-```sh
-vlog -sv rtl/alu.sv rtl/flag_register.sv rtl/execution_unit.sv \
-  rtl/register_file.sv rtl/instruction_decoder.sv rtl/program_counter.sv \
-  rtl/data_memory_interface.sv rtl/cpu_core.sv tests/tb_cpu_core_program.sv
-vsim -c tb_cpu_core_program -do "run -all; quit -f"
-```
+The core-level tests build progressively from PC/decode control through
+arithmetic writeback, conditional branching, data memory, HALT behavior, and
+the complete program.
 
 ## Roadmap
 
-1. ISA specification and reference emulator — in progress
-2. Single-cycle CPU core and RTL verification
-3. FPGA memory, LEDs, and UART demo
-4. Timer, interrupts, and exceptions
-5. Three-stage pipeline with forwarding and hazard handling
-6. Documentation, benchmarks, and demo video
+The next milestone is FPGA bring-up:
 
-The detailed plan lives in [docs/roadmap.md](docs/roadmap.md).
+1. Select a development board and toolchain.
+2. Add synthesizable instruction ROM and data RAM.
+3. Add a clock/reset wrapper.
+4. Connect memory-mapped LEDs and UART transmit.
+5. Run a small program on hardware.
+
+The information needed to begin is listed in
+[the FPGA bring-up plan](docs/fpga-bring-up.md).
+
+Later milestones add a timer, interrupts and exceptions, a three-stage
+pipeline, forwarding, hazard handling, and portfolio-oriented documentation.
+See [the detailed roadmap](docs/roadmap.md).
 
 ## Project goals
 
-This is a portfolio project focused on ISA design, datapath/control implementation, verification, and hardware/software co-design. It is not intended to be compatible with an existing architecture.
+This is a portfolio project focused on computer architecture,
+hardware/software co-design, verification, and FPGA implementation. The ISA is
+intentionally compact so that the complete control and datapath behavior remain
+understandable and testable.
