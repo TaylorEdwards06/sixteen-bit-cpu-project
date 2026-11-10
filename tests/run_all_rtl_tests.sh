@@ -20,6 +20,7 @@ vlog -sv \
     tests/tb_*.sv
 
 testbenches=(
+    tb_alu_constrained_random
     tb_register_file
     tb_instruction_decoder
     tb_program_counter

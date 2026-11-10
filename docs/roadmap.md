@@ -30,6 +30,12 @@ FPGA part number, clock source, and available LED/UART pins.
 - [ ] Add memory-mapped LEDs and UART transmit
 - [ ] Demonstrate a serial "hello" and register/ALU program
 
+## Ongoing verification
+
+- [ ] Validate the constrained-random ALU test across several recorded seeds
+- [ ] Add constrained-random decoder and data-memory-interface tests
+- [ ] Compare randomized CPU instruction sequences against the Python emulator
+
 ## Milestone 3: system features
 
 - Add timer peripheral and maskable interrupt path

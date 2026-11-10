@@ -102,6 +102,10 @@ The script creates the ModelSim work library when needed, compiles the complete
 design and test suite, stops on the first failure, and returns a nonzero exit
 status when compilation or simulation fails.
 
+The suite includes a self-checking constrained-random ALU test. It combines
+directed flag corner cases with 5,000 randomized legal operations and an
+independent reference calculation.
+
 The core-level tests build progressively from PC/decode control through
 arithmetic writeback, conditional branching, data memory, HALT behavior, and
 the complete program.
